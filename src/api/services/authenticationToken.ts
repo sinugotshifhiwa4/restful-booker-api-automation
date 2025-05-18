@@ -28,15 +28,21 @@ export class AuthenticationToken {
   }
   public async requestTokenWithInvalidCredentials(): Promise<void> {
     try {
-      // Register negative test expectation
-      // This test will return 200 even on bad credentials, so it's important to check the response
+      /* 
+  Register negative test expectation.
+  Note: This is a demo website (Restful Booker) that returns HTTP 200 even for failed authentication attempts.
+  Although 200 typically implies success, we must validate the response content to confirm it's an actual failure.
+  This behavior is incorrect by REST standards, but it's outside our control in this demo environment.
+*/
       RequestContext.registerExpectation('requestTokenWithInvalidCredentials', [200], true);
 
       // Resolve the username from the active environment configuration
       const { username } = await this.environmentResolver.getTokenCredentials();
 
-      // Load credentials template and override with invalid password
-      const userCredentials = tokenCredentials.Credentials;
+      // Create a fresh copy of the base credentials template to avoid mutating shared test data.
+      // Override the username and password with valid credentials from the current environment.
+      const userCredentials = { ...tokenCredentials.Credentials };
+
       userCredentials.username = username;
       userCredentials.password = 'invalid_password';
 
@@ -68,8 +74,10 @@ export class AuthenticationToken {
       // Resolve the username from the active environment configuration
       const { username, password } = await this.environmentResolver.getTokenCredentials();
 
-      // Load credentials template and override with valid credentials
-      const userCredentials = tokenCredentials.Credentials;
+      // Create a fresh copy of the base credentials template to avoid mutating shared test data.
+      // Override the username and password with valid credentials from the current environment.
+      const userCredentials = { ...tokenCredentials.Credentials };
+
       userCredentials.username = username;
       userCredentials.password = password;
 
