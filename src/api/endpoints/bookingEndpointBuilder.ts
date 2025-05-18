@@ -12,7 +12,7 @@ export class BookingEndpointBuilder {
   public async tokenEndpoint() {
     try {
       const authEndpoint = `${types.ResourceEndpoints.token}`;
-      return this.generateUrl(() => authEndpoint, 'token');
+      return this.generateUrl(authEndpoint, 'token');
     } catch (error) {
       ErrorHandler.captureError(error, 'tokenEndpoint', 'Failed to create token endpoint');
       throw error;
@@ -22,7 +22,7 @@ export class BookingEndpointBuilder {
   public async bookingEndpoint() {
     try {
       const bookingEndpoint = `${types.ResourceEndpoints.booking}`;
-      return this.generateUrl(() => bookingEndpoint, 'booking');
+      return this.generateUrl(bookingEndpoint, 'booking');
     } catch (error) {
       ErrorHandler.captureError(error, 'bookingEndpoint', 'Failed to create booking endpoint');
       throw error;
@@ -34,7 +34,7 @@ export class BookingEndpointBuilder {
       this.validateParameters({ bookingId }, 'getBookingById');
 
       const bookingEndpoint = `${types.ResourceEndpoints.booking}/${bookingId}`;
-      return this.generateUrl(() => bookingEndpoint, 'booking');
+      return this.generateUrl(bookingEndpoint, 'booking');
     } catch (error) {
       ErrorHandler.captureError(
         error,
@@ -45,15 +45,11 @@ export class BookingEndpointBuilder {
     }
   }
 
-  private async generateUrl(
-    endpointConstructor: () => string,
-    resourceType: types.ResourceType,
-  ): Promise<string> {
+  private async generateUrl(endpoint: string, resourceType: types.ResourceType): Promise<string> {
     try {
       // Ensure the builder is initialized before using it
-        await this.apiBaseUrlBuilder.initializeIfNeeded();
+      await this.apiBaseUrlBuilder.initializeIfNeeded();
 
-      const endpoint = endpointConstructor();
       return this.apiBaseUrlBuilder.generateResourceUrl(endpoint, resourceType);
     } catch (error) {
       const methodName = `generate${resourceType.charAt(0).toUpperCase() + resourceType.slice(1)}Url`;
