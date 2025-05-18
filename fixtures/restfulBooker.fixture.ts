@@ -7,6 +7,7 @@ import { ApiClient } from '../src/api/client/apiClient';
 import { ApiBaseUrlBuilder } from '../src/api/endpoints/apiBaseUrlBuilder';
 import { BookingEndpointBuilder } from '../src/api/endpoints/bookingEndpointBuilder';
 import { AuthenticationToken } from '../src/api/services/authenticationToken';
+import { Booking } from '../src/api/services/booking';
 
 type restfulbookerFixtures = {
   // Common
@@ -20,6 +21,7 @@ type restfulbookerFixtures = {
   apiBaseUrlBuilder: ApiBaseUrlBuilder;
   bookingEndpointBuilder: BookingEndpointBuilder;
   authenticationToken: AuthenticationToken;
+  booking: Booking;
 };
 
 const restfulBookerTests = baseTest.extend<restfulbookerFixtures>({
@@ -52,6 +54,9 @@ const restfulBookerTests = baseTest.extend<restfulbookerFixtures>({
   },
   authenticationToken: async ({ apiClient, bookingEndpointBuilder, environmentResolver }, use) => {
     await use(new AuthenticationToken(apiClient, bookingEndpointBuilder, environmentResolver));
+  },
+  booking: async ({ apiClient, bookingEndpointBuilder }, use) => {
+    await use(new Booking(apiClient, bookingEndpointBuilder));
   },
 });
 

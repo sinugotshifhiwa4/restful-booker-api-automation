@@ -68,4 +68,40 @@ export default class BookingValidations {
       throw error;
     }
   }
+
+  /**
+ * Validates the response from getting all bookings.
+ * Ensures the response is an array where each item has a bookingid with a numeric value.
+ *
+ * @param response - The Axios response object from the getAllBookings request
+ */
+public static validateGetAllBookingsResponse(response: AxiosResponse): void {
+  try {
+    const data = response?.data;
+
+    if (!Array.isArray(data)) {
+      ErrorHandler.logAndThrow('Invalid response format, expected an array', 'validateGetAllBookingsResponse');
+    }
+
+    data.forEach((booking, index) => {
+      if (!booking || typeof booking !== 'object') {
+        ErrorHandler.logAndThrow(`Item at index ${index} is not a valid object`, 'validateGetAllBookingsResponse');
+      }
+
+      expect(booking.bookingid, `Booking at index ${index} should have a bookingid`).toBeDefined();
+      expect(typeof booking.bookingid, `Booking ID at index ${index} should be a number`).toBe('number');
+      expect(Number.isInteger(booking.bookingid), `Booking ID at index ${index} should be an integer`).toBe(true);
+    });
+
+    logger.info(`Successfully validated getAllBookings response with ${data.length} bookings`);
+  } catch (error) {
+    ErrorHandler.captureError(
+      error,
+      'validateGetAllBookingsResponse',
+      'Failed to validate getAllBookings response',
+    );
+    throw error;
+  }
+}
+
 }

@@ -69,7 +69,7 @@ export class AuthenticationToken {
   public async requestTokenWithValidCredentials(): Promise<void> {
     try {
       // Register positive test expectation
-      RequestContext.registerExpectation('requestTokenWithValidCredentials', [200], true);
+      RequestContext.registerExpectation('requestTokenWithValidCredentials', [200], false);
 
       // Resolve the username from the active environment configuration
       const { username, password } = await this.environmentResolver.getTokenCredentials();
