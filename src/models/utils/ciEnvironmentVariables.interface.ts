@@ -1,5 +1,5 @@
 export interface CIEnvironmentVariables {
-  portalBaseUrl: string;
+  appVersion: string;
   apiBaseUrl: string;
   username: string;
   password: string;

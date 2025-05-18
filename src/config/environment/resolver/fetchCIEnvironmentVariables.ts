@@ -6,21 +6,18 @@ import ErrorHandler from '../../../utils/errors/errorHandler';
 export class FetchCIEnvironmentVariables {
   // Store CI credentials from environment variables
   private readonly ciEnvironmentVariables: CIEnvironmentVariables = {
-    portalBaseUrl: process.env.CI_PORTAL_BASE_URL!,
+    appVersion: process.env.CI_APP_VERSION!,
     apiBaseUrl: process.env.CI_API_BASE_URL!,
-    username: process.env.CI_PORTAL_USERNAME!,
-    password: process.env.CI_PORTAL_PASSWORD!,
+    username: process.env.CI_TOKEN_USERNAME!,
+    password: process.env.CI_TOKEN_PASSWORD!,
   };
 
-  /**
-   * Get portal base URL from CI environment variables
-   */
-  public async getPortalBaseUrl(): Promise<string> {
+ public async getAppVersion(): Promise<string> {
     return this.getEnvironmentVariable(
-      () => this.ciEnvironmentVariables.portalBaseUrl,
-      'CI_PORTAL_BASE_URL',
-      'getPortalBaseUrl',
-      'Failed to get CI portal base URL',
+      () => this.ciEnvironmentVariables.appVersion,
+      'CI_APP_VERSION',
+      'getAppVersion',
+      'Failed to get CI app version',
     );
   }
 
@@ -39,7 +36,7 @@ export class FetchCIEnvironmentVariables {
   /**
    * Get credentials from CI environment variables
    */
-  public async getCredentials(): Promise<UserCredentials> {
+  public async getTokenCredentials(): Promise<UserCredentials> {
     try {
       const credentials = {
         username: SanitizationConfig.sanitizeString(this.ciEnvironmentVariables.username),
@@ -48,7 +45,7 @@ export class FetchCIEnvironmentVariables {
       this.verifyCredentials(credentials);
       return credentials;
     } catch (error) {
-      ErrorHandler.captureError(error, 'getCredentials', 'Failed to get CI credentials');
+      ErrorHandler.captureError(error, 'getTokenCredentials', 'Failed to get CI token credentials');
       throw error;
     }
   }

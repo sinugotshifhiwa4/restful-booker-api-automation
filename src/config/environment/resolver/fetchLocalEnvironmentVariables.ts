@@ -6,15 +6,12 @@ import ENV from '../../../utils/environment/constants/environmentVariables';
 import ErrorHandler from '../../../utils/errors/errorHandler';
 
 export class FetchLocalEnvironmentVariables {
-  /**
-   * Get portal base URL from local environment
-   */
-  public async getPortalBaseUrl(): Promise<string> {
+  public async getAppVersion(): Promise<string> {
     return this.getEnvironmentVariable(
-      () => ENV.PORTAL_BASE_URL,
-      'PORTAL_URL',
-      'getPortalBaseUrl',
-      'Failed to get local portal base URL',
+      () => ENV.APP_VERSION,
+      'APP_VERSION',
+      'getAppVersion',
+      'Failed to get local app version',
       false,
     );
   }
@@ -35,17 +32,21 @@ export class FetchLocalEnvironmentVariables {
   /**
    * Get credentials from local environment
    */
-  public async getCredentials(): Promise<UserCredentials> {
+  public async getTokenCredentials(): Promise<UserCredentials> {
     try {
       const credentials = await this.decryptCredentials(
-        ENV.PORTAL_USERNAME,
-        ENV.PORTAL_PASSWORD,
+        ENV.TOKEN_USERNAME,
+        ENV.TOKEN_PASSWORD,
         EnvironmentSecretKeyVariables.UAT,
       );
       this.verifyCredentials(credentials);
       return credentials;
     } catch (error) {
-      ErrorHandler.captureError(error, 'getCredentials', 'Failed to get local credentials');
+      ErrorHandler.captureError(
+        error,
+        'getTokenCredentials',
+        'Failed to get local token credentials',
+      );
       throw error;
     }
   }

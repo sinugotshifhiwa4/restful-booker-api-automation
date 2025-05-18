@@ -16,12 +16,12 @@ export class EnvironmentResolver {
     this.FetchLocalEnvironmentVariables = fetchLocalEnvironmentVariables;
   }
 
-  public async getPortalBaseUrl(): Promise<string> {
+  public async getAppVersion(): Promise<string> {
     return this.getEnvironmentValue(
-      () => this.fetchCIEnvironmentVariables.getPortalBaseUrl(),
-      () => this.FetchLocalEnvironmentVariables.getPortalBaseUrl(),
-      'getPortalBaseUrl',
-      'Failed to get portal base URL',
+      () => this.fetchCIEnvironmentVariables.getAppVersion(),
+      () => this.FetchLocalEnvironmentVariables.getAppVersion(),
+      'getAppVersion',
+      'Failed to get app version',
     );
   }
 
@@ -34,10 +34,10 @@ export class EnvironmentResolver {
     );
   }
 
-  public async getCredentials(): Promise<UserCredentials> {
+  public async getTokenCredentials(): Promise<UserCredentials> {
     return this.getEnvironmentValue(
-      () => this.fetchCIEnvironmentVariables.getCredentials(),
-      () => this.FetchLocalEnvironmentVariables.getCredentials(),
+      () => this.fetchCIEnvironmentVariables.getTokenCredentials(),
+      () => this.FetchLocalEnvironmentVariables.getTokenCredentials(),
       'getCredentials',
       'Failed to get credentials',
     );
