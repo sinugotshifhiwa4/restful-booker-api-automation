@@ -6,19 +6,19 @@ This repository hosts the **Restful Booker Test Automation Framework**, develope
 
 ## 📚 Table of Contents
 
-- [Installation](#-installation)
-- [Environment Setup](#️-environment-setup)
-- [Encryption](#-encryption)
-- [Running Tests](#-running-tests)
-- [Developer Tools](#-developer-tools)
-- [Running Tests by Tag](#-running-tests-by-tag)
+- [Installation](#installation)
+- [Environment Setup](#environment-setup)
+- [Encryption](#encryption)
+- [Running Tests](#running-tests)
+- [Developer Tools](#developer-tools)
+- [Running Tests by Tag](#running-tests-by-tag)
 - [Logger](#logger)
 - [Centralized Error Handling](#centralized-error-handling)
 - [Sanitization](#sanitization)
 - [Async File Manager](#asyncfilemanager)
 - [Reporting](#reporting)
 - [Restful Booker API Documentation](#restful-booker-api-documentation)
-- [Notes](#-notes)
+- [Notes](#notes)
 
 ---
 
