@@ -51,9 +51,7 @@ export class BookingEndpointBuilder {
   ): Promise<string> {
     try {
       // Ensure the builder is initialized before using it
-      if (!this.apiBaseUrlBuilder.isInitialized()) {
         await this.apiBaseUrlBuilder.initializeIfNeeded();
-      }
 
       const endpoint = endpointConstructor();
       return this.apiBaseUrlBuilder.generateResourceUrl(endpoint, resourceType);

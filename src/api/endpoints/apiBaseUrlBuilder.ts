@@ -60,7 +60,7 @@ export class ApiBaseUrlBuilder {
         ErrorHandler.logAndThrow(errorMessage, 'initialize');
       }
 
-      logger.info(`Loaded API Base URL: ${url}`);
+      logger.debug(`Loaded API Base URL: ${url}`);
       this.baseUrl = url;
       this.initialized = true;
     } catch (error) {
@@ -86,42 +86,6 @@ export class ApiBaseUrlBuilder {
     } catch (error) {
       logger.warn('Failed to initialize ApiUrlBuilder', error);
       return false;
-    }
-  }
-
-  /**
-   * Checks if the base URL has been initialized.
-   * @returns True if the base URL is initialized, false otherwise.
-   */
-  public isInitialized(): boolean {
-    return this.initialized && !!this.baseUrl;
-  }
-
-  /**
-   * Gets the current base URL.
-   * @returns The base URL string or null if not initialized.
-   */
-  public getBaseUrl(): string | null {
-    return this.baseUrl;
-  }
-
-  /**
-   * Updates the base URL after initialization.
-   *
-   * @param newBaseUrl - The new base URL to set
-   * @throws Will throw an error if the new URL is invalid
-   */
-  public updateBaseUrl(newBaseUrl: string): void {
-    try {
-      // Validate the URL format
-      new URL(newBaseUrl);
-      this.baseUrl = newBaseUrl;
-      this.initialized = true;
-      logger.info(`Updated API Base URL: ${newBaseUrl}`);
-    } catch (urlError) {
-      const errorMessage = `Invalid API Base URL format: ${newBaseUrl}`;
-      ErrorHandler.captureError(urlError, 'updateBaseUrl', errorMessage);
-      throw urlError;
     }
   }
 
@@ -163,7 +127,7 @@ export class ApiBaseUrlBuilder {
       const normalizedEndpoint = this.normalizeEndpoint(endpoint);
       const constructedUrl = new URL(normalizedEndpoint, baseUrl).toString();
 
-      logger.info(`${resourceType} URL generated: ${constructedUrl}`);
+      logger.debug(`${resourceType} URL generated: ${constructedUrl}`);
       return constructedUrl;
     } catch (error) {
       ErrorHandler.captureError(
