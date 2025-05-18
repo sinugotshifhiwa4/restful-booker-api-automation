@@ -17,6 +17,7 @@ This repository hosts the **Restful Booker Test Automation Framework**, develope
 - [Sanitization](#sanitization)
 - [Async File Manager](#asyncfilemanager)
 - [Reporting](#reporting)
+- [Restful Booker API Documentation](#restful-booker-api-documentation)
 - [Notes](#-notes)
 
 ---
@@ -77,7 +78,6 @@ npx cross-env PLAYWRIGHT_GREP=@encrypt npm run test:encryption:uat
 ```
 
 #### 🔁 Run Both: Generate Key and Encrypt
-
 
 To streamline the process, you can run both the **key generation** and **encryption** steps in one command:
 
@@ -239,6 +239,13 @@ await AsyncFileManager.writeFile('out.txt', 'Hello');
   ```bash
   npm run report
   ```
+
+## 🧾 Restful Booker API Documentation
+
+You can access the official documentation for the Restful Booker API here:
+🔗 [https://restful-booker.herokuapp.com/apidoc/index.html](https://restful-booker.herokuapp.com/apidoc/index.html)
+
+This documentation provides detailed information on endpoints, request/response structure, and authentication requirements.
 
 ---
 
