@@ -4,25 +4,25 @@ This repository hosts the **Restful Booker Test Automation Framework**, develope
 
 ---
 
-## 📚 Table of Contents
+## Table of Contents
 
 - [Installation](#installation)
 - [Environment Setup](#environment-setup)
 - [Encryption](#encryption)
 - [Running Tests](#running-tests)
-- [Developer Tools](#developer-tools)
+- [Additional Commands](#additional-commands)
 - [Running Tests by Tag](#running-tests-by-tag)
 - [Logger](#logger)
 - [Centralized Error Handling](#centralized-error-handling)
 - [Sanitization](#sanitization)
-- [Async File Manager](#asyncfilemanager)
+- [AsyncFileManager](#asyncfilemanager)
 - [Reporting](#reporting)
 - [Restful Booker API Documentation](#restful-booker-api-documentation)
 - [Notes](#notes)
 
 ---
 
-## 🔧 Installation
+## Installation
 
 Ensure **Node.js** is installed on your machine. Then install the project dependencies:
 
@@ -32,7 +32,7 @@ npm install
 
 ---
 
-## ⚙️ Environment Setup
+## Environment Setup
 
 Before running tests, set up your environment variables and encryption settings.
 
@@ -55,13 +55,13 @@ TOKEN_PASSWORD=your.password
 
 ---
 
-## 🔐 Encryption
+## Encryption
 
 Sensitive credentials are encrypted using **AES-GCM** along with **Argon2 hashing** to ensure secure and tamper-resistant storage and transmission.
 
-### 🛠️ Command-Line Utilities
+### Command-Line Utilities
 
-#### 🔑 Generate a Secret Key
+#### Generate a Secret Key
 
 Use the following command to generate a unique secret key for your environment:
 
@@ -69,7 +69,7 @@ Use the following command to generate a unique secret key for your environment:
 npx cross-env PLAYWRIGHT_GREP=@generate-key npm run test:encryption:uat
 ```
 
-#### 🔒 Encrypt Credentials
+#### Encrypt Credentials
 
 After generating the key, run the encryption process to secure your credentials:
 
@@ -77,7 +77,7 @@ After generating the key, run the encryption process to secure your credentials:
 npx cross-env PLAYWRIGHT_GREP=@encrypt npm run test:encryption:uat
 ```
 
-#### 🔁 Run Both: Generate Key and Encrypt
+#### Run Both: Generate Key and Encrypt
 
 To streamline the process, you can run both the **key generation** and **encryption** steps in one command:
 
@@ -97,7 +97,7 @@ npx cross-env PLAYWRIGHT_GREP=@encryption npm run test:encryption:dev
 
 ---
 
-## 🧪 Running Tests
+## Running Tests
 
 Use these commands to run tests in different environments:
 
@@ -110,7 +110,7 @@ Use these commands to run tests in different environments:
 
 ---
 
-## 🛠️ Additional Commands
+## Additional Commands
 
 Tools to boost productivity and maintain code quality:
 
@@ -123,7 +123,7 @@ Tools to boost productivity and maintain code quality:
 
 ---
 
-## 🏷️ Running Tests by Tag
+## Running Tests by Tag
 
 Filter tests using the `PLAYWRIGHT_GREP` environment variable.
 
@@ -136,7 +136,7 @@ Filter tests using the `PLAYWRIGHT_GREP` environment variable.
 
 ---
 
-## 📋 Logger
+## Logger
 
 The framework uses the **Winston** logger with environment-based log levels:
 
@@ -146,7 +146,7 @@ The framework uses the **Winston** logger with environment-based log levels:
 
 ---
 
-## ❗ Centralized Error Handling
+## Centralized Error Handling
 
 A robust centralized system for error logging, categorization, and reporting, including:
 
@@ -184,7 +184,7 @@ throw error;
 
 ---
 
-## 🧼 Sanitization
+## Sanitization
 
 ### `SanitizationConfig`
 
@@ -212,7 +212,7 @@ const sanitized = SanitizationConfig.sanitizeData(userData);
 
 ---
 
-## 📁 AsyncFileManager
+## AsyncFileManager
 
 A modern, promise-based utility for secure file operations.
 
@@ -232,7 +232,7 @@ await AsyncFileManager.writeFile('out.txt', 'Hello');
 
 ---
 
-## 📊 Reporting
+## Reporting
 
 - **Playwright HTML report**:
 
@@ -240,7 +240,7 @@ await AsyncFileManager.writeFile('out.txt', 'Hello');
   npm run report
   ```
 
-## 🧾 Restful Booker API Documentation
+## Restful Booker API Documentation
 
 You can access the official documentation for the Restful Booker API here:
 🔗 [https://restful-booker.herokuapp.com/apidoc/index.html](https://restful-booker.herokuapp.com/apidoc/index.html)
@@ -249,7 +249,7 @@ This documentation provides detailed information on endpoints, request/response 
 
 ---
 
-## 📝 Notes
+## Notes
 
 - ❌ **Never commit `.env` files** to version control.
 - 🔐 Always regenerate encryption keys when credentials change.
