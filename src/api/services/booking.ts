@@ -167,8 +167,6 @@ export class Booking {
         await this.bookingEndpointBuilder.getBookingByIdEndpoint(bookingId),
       );
 
-      console.log(`Response: ${JSON.stringify(response.data, null, 2)}`);
-
       ApiResponseValidator.validatePositiveTestResponse(response, 200, 'getBookingById');
 
     } catch (error) {
