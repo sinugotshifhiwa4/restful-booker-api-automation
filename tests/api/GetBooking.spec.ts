@@ -43,7 +43,7 @@ test.describe('Get Booking Test Suite @regression', () => {
     }
   });
 
-  test.only('should update booking by id @sanity', async ({
+  test('should update booking by id @sanity', async ({
     authenticationToken,
     booking,
     testId,
