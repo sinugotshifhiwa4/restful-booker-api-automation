@@ -1,5 +1,4 @@
 import { test } from '../../fixtures/restfulBooker.fixture';
-
 import { BookingMap } from '../../src/utils/dataStore/maps/bookingMaps';
 import TestDataStore from '../../src/utils/dataStore/utils/testDataStore';
 import { StorableObject } from '../../src/models/api/testDataStore.types';
@@ -71,6 +70,37 @@ test.describe('Get Booking Test Suite @regression', () => {
       logger.info('Update booking by id completed successfully.');
     } else {
       ErrorHandler.logAndThrow('Invalid booking ID: must be a number', 'updateBookingById');
+    }
+  });
+
+    test('should partially update booking by id @sanity', async ({
+    authenticationToken,
+    booking,
+    testId,
+  }) => {
+    // === AUTHENTICATION: Request and store token ===
+    const tokenResponse = await authenticationToken.requestTokenWithValidCredentials();
+    const token = await authenticationToken.getTokenFromResponse(tokenResponse);
+
+    // === BOOKING CREATION: Create and store new booking ===
+    const newBookingResponse = await booking.createNewBooking();
+
+    TestDataStore.setValue(
+      BookingMap.booking,
+      testId.TEST_IDS.bookingTestIds.PARTIALLY_UPDATED_BOOKING_DATA,
+      'responseObject',
+      newBookingResponse.data as StorableObject,
+    );
+
+    const bookingId = newBookingResponse.data.bookingid;
+
+    // === BOOKING PARTIALLY UPDATE: Update booking using stored token and bookingId ===
+    if (typeof bookingId === 'number') {
+      await booking.partiallyUpdateBookingById(bookingId, token);
+
+      logger.info('Partially update booking by id completed successfully.');
+    } else {
+      ErrorHandler.logAndThrow('Invalid booking ID: must be a number', 'partiallyUpdateBookingById');
     }
   });
 });

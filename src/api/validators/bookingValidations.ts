@@ -344,4 +344,50 @@ export default class BookingValidations {
 
     return payload;
   }
+
+  public static assertPartiallyUpdatedBookingDetailsMatchStoredResponse(response: AxiosResponse) {
+    try {
+      // partially update booking payload
+      const partiallyUpdatedBookingPayload = this.partiallyUpdateBookingPayload();
+
+      const responseData = response.data.booking ? response.data.booking : response.data;
+
+      expect(responseData.firstname).toBe(partiallyUpdatedBookingPayload.firstname);
+      expect(responseData.lastname).toBe(partiallyUpdatedBookingPayload.lastname);
+      expect(responseData.totalprice).toBe(partiallyUpdatedBookingPayload.totalprice);
+      expect(responseData.depositpaid).toBe(partiallyUpdatedBookingPayload.depositpaid);
+      expect(responseData.bookingdates.checkin).toBe(
+        partiallyUpdatedBookingPayload.bookingdates.checkin,
+      );
+      expect(responseData.bookingdates.checkout).toBe(
+        partiallyUpdatedBookingPayload.bookingdates.checkout,
+      );
+      expect(responseData.additionalneeds).toBe(partiallyUpdatedBookingPayload.additionalneeds);
+    } catch (error) {
+      ApiErrorResponseBuilder.captureApiError(
+        error,
+        'assertPartiallyUpdatedBookingDetailsMatchStoredResponse',
+        'Failed to validate that partially updated booking details match the stored booking response.',
+      );
+      throw error;
+    }
+  }
+
+  private static partiallyUpdateBookingPayload() {
+    const payload = { ...bd.Booking };
+
+    payload.firstname = bd.FirstNames[5];
+    payload.lastname = bd.LastNames[7];
+
+    payload.totalprice = 920;
+    payload.depositpaid = true;
+
+    const getDates = BookingDateGenerator.createBookingDatesfromCurrentDate(3);
+    payload.bookingdates.checkin = getDates.checkin;
+    payload.bookingdates.checkout = getDates.checkout;
+
+    payload.additionalneeds = bd.AdditionalNeeds[0];
+
+    return payload;
+  }
 }

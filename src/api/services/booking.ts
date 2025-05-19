@@ -107,6 +107,20 @@ export class Booking {
     }
   }
 
+  public async getBookingByIdNotFound(bookingId: number): Promise<void> {
+    try {
+      RequestContext.registerExpectation('getBookingById', [404], true);
+
+      const response = await this.apiClient.sendGetRequest(
+        await this.bookingEndpointBuilder.getBookingByIdEndpoint(bookingId),
+      );
+
+      ApiResponseValidator.validateNegativeTestResponse(response, 404, 'getBookingById');
+    } catch (error) {
+      ApiErrorResponseBuilder.handleNegativeTestError(error, 'getBookingById');
+    }
+  }
+
   public async updateBookingById(bookingId: number, token: string): Promise<AxiosResponse> {
     try {
       RequestContext.registerExpectation('updateBookingById', [200], false);
@@ -148,5 +162,71 @@ export class Booking {
     payload.additionalneeds = bd.AdditionalNeeds[2];
 
     return payload;
+  }
+
+  public async partiallyUpdateBookingById(
+    bookingId: number,
+    token: string,
+  ): Promise<AxiosResponse> {
+    try {
+      RequestContext.registerExpectation('partillyUpdateBookingById', [200], false);
+
+      const response = await this.apiClient.sendPatchRequest(
+        await this.bookingEndpointBuilder.getBookingByIdEndpoint(bookingId),
+        this.partiallyUpdateBookingPayload(),
+        this.apiClient.setCookieToken(token),
+      );
+      ApiResponseValidator.validatePositiveTestResponse(response, 200, 'partillyUpdateBookingById');
+
+      // Validate response structure and content
+      BookingValidations.validateGetBookingByIdResponse(response);
+      BookingValidations.assertPartiallyUpdatedBookingDetailsMatchStoredResponse(response);
+      return response;
+    } catch (error) {
+      ApiErrorResponseBuilder.captureApiError(
+        error,
+        'partillyUpdateBookingById',
+        'Failed to partially update booking by ID',
+      );
+      throw error;
+    }
+  }
+
+  private partiallyUpdateBookingPayload() {
+    const payload = { ...bd.Booking };
+
+    payload.firstname = bd.FirstNames[5];
+    payload.lastname = bd.LastNames[7];
+
+    payload.totalprice = 920;
+    payload.depositpaid = true;
+
+    const getDates = BookingDateGenerator.createBookingDatesfromCurrentDate(3);
+    payload.bookingdates.checkin = getDates.checkin;
+    payload.bookingdates.checkout = getDates.checkout;
+
+    payload.additionalneeds = bd.AdditionalNeeds[0];
+
+    return payload;
+  }
+
+  public async deleteBookingById(bookingId: number, token: string): Promise<void> {
+    try {
+      RequestContext.registerExpectation('deleteBookingById', [201], false);
+
+      const response = await this.apiClient.sendDeleteRequest(
+        await this.bookingEndpointBuilder.getBookingByIdEndpoint(bookingId),
+        this.apiClient.setCookieToken(token),
+      );
+
+      ApiResponseValidator.validatePositiveTestResponse(response, 201, 'deleteBookingById');
+    } catch (error) {
+      ApiErrorResponseBuilder.captureApiError(
+        error,
+        'deleteBookingById',
+        'Failed to delete booking by ID',
+      );
+      throw error;
+    }
   }
 }
