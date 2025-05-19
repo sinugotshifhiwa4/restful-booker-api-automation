@@ -12,7 +12,7 @@ export default class TestDataStoreManager {
    * @returns true if the operation was successful
    * @throws {Error} If inputs are invalid or operation fails
    */
-  public static setValue<T extends Record<string, string | number | null>>(
+  public static setValue<T extends Record<string, string | number |  null>>(
     map: Map<string, T>,
     testId: string,
     key: keyof T,

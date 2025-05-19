@@ -13,6 +13,7 @@ export class ApiClient {
   constructor() {
     this.defaultHeaders = {
       'Content-Type': 'application/json',
+       'Accept': 'application/json',
     };
   }
 

@@ -8,9 +8,8 @@ import * as tokenCredentials from '../../testData/tokenCredentials.json';
 import BookingValidations from '../validators/bookingValidations';
 import { TEST_CONSTANTS } from '../../utils/dataStore/testIds/index';
 import { BookingTokenMap } from '../../utils/dataStore/maps/bookingMaps';
-import ApiErrorResponseBuilder from '../../utils/errors/apiErrorResponseBuilder';
-import ErrorHandler from '../../utils/errors/errorHandler';
 import TestDataStoreManager from '../../utils/dataStore/utils/testDataStoreManager';
+import ApiErrorResponseBuilder from '../../utils/errors/apiErrorResponseBuilder';
 
 export class AuthenticationToken {
   private apiClient: ApiClient;
@@ -118,27 +117,16 @@ export class AuthenticationToken {
     }
   }
 
+  /**
+   * Extracts token from response
+   * @param response The Axios response object
+   * @returns The token string
+   */
   private async getTokenFromResponse(response: AxiosResponse): Promise<string> {
-    try {
-      const data = response?.data;
-
-      if (!data || typeof data !== 'object') {
-        ErrorHandler.logAndThrow('Invalid response format', 'getTokenFromResponse');
-      }
-
-      const token = data.token;
-      if (typeof token !== 'string') {
-        ErrorHandler.logAndThrow('Token not found or invalid in response', 'getTokenFromResponse');
-      }
-
-      return token;
-    } catch (error) {
-      ApiErrorResponseBuilder.captureApiError(
-        error,
-        'getTokenFromResponse',
-        'Failed to get token from response',
-      );
-      throw error;
-    }
+    return BookingValidations.extractPropertyFromResponse<string>(
+      response,
+      'token',
+      'getTokenFromResponse',
+    );
   }
 }

@@ -29,7 +29,7 @@ export class BookingEndpointBuilder {
     }
   }
 
-  public async getBookingByIdEndpoint(bookingId: string) {
+  public async getBookingByIdEndpoint(bookingId: number) {
     try {
       this.validateParameters({ bookingId }, 'getBookingById');
 
