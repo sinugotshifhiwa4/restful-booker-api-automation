@@ -2,6 +2,7 @@ import { test as baseTest, TestInfo } from '@playwright/test';
 import { EnvironmentResolver } from '../src/config/environment/resolver/environmentResolver';
 import { FetchCIEnvironmentVariables } from '../src/config/environment/resolver/fetchCIEnvironmentVariables';
 import { FetchLocalEnvironmentVariables } from '../src/config/environment/resolver/fetchLocalEnvironmentVariables';
+import { TEST_CONSTANTS } from '../src/utils/dataStore/testIds';
 
 import { ApiClient } from '../src/api/client/apiClient';
 import { ApiBaseUrlBuilder } from '../src/api/endpoints/apiBaseUrlBuilder';
@@ -15,6 +16,7 @@ type restfulbookerFixtures = {
   fetchCIEnvironmentVariables: FetchCIEnvironmentVariables;
   fetchLocalEnvironmentVariables: FetchLocalEnvironmentVariables;
   testInfo: TestInfo;
+  testId: typeof TEST_CONSTANTS;
 
   // API
   apiClient: ApiClient;
@@ -40,6 +42,9 @@ const restfulBookerTests = baseTest.extend<restfulbookerFixtures>({
   },
   testInfo: async ({}, use) => {
     await use(baseTest.info());
+  },
+  testId: async ({}, use) => {
+    await use(TEST_CONSTANTS);
   },
 
   // API

@@ -1,5 +1,4 @@
 import { test } from '../../fixtures/restfulBooker.fixture';
-import { TEST_CONSTANTS } from '../../src/utils/dataStore/testIds/index';
 import { BookingMap } from '../../src/utils/dataStore/maps/bookingMaps';
 import TestDataStore from '../../src/utils/dataStore/utils/testDataStore';
 import logger from '../../src/utils/logging/loggerManager';
@@ -11,7 +10,7 @@ test.describe('Authentication Token Tests @regression', () => {
     logger.info('Authentication token request with invalid credentials completed successfully.');
   });
 
-  test('should accept valid credentials @sanity', async ({ authenticationToken }) => {
+  test('should accept valid credentials @sanity', async ({ authenticationToken, testId }) => {
     const response = await authenticationToken.requestTokenWithValidCredentials();
 
     // Extract the token from the response
@@ -20,7 +19,7 @@ test.describe('Authentication Token Tests @regression', () => {
     // Store the token in the test data store
     TestDataStore.setValue(
       BookingMap.token,
-      TEST_CONSTANTS.TEST_IDS.tokenTestIds.REQUEST_TOKEN_WITH_VALID_CREDENTIALS,
+      testId.TEST_IDS.tokenTestIds.REQUEST_TOKEN_WITH_VALID_CREDENTIALS,
       'token',
       token,
     );

@@ -1,5 +1,5 @@
 import { test } from '../../fixtures/restfulBooker.fixture';
-import { TEST_CONSTANTS } from '../../src/utils/dataStore/testIds/index';
+
 import { BookingMap } from '../../src/utils/dataStore/maps/bookingMaps';
 import TestDataStore from '../../src/utils/dataStore/utils/testDataStore';
 import { StorableObject } from '../../src/models/api/testDataStore.types';
@@ -22,20 +22,20 @@ test.describe('All Booking Test Suite @regression', () => {
 });
 
 test.describe('Get Booking Test Suite @regression', () => {
-  test('should get booking by id @sanity', async ({ booking }) => {
+  test('should get booking by id @sanity', async ({ booking, testId }) => {
     // Create a new booking
     const response = await booking.createNewBooking();
 
     TestDataStore.setValue(
       BookingMap.booking,
-      TEST_CONSTANTS.TEST_IDS.bookingTestIds.STORE_BOOOKING_ID,
+      testId.TEST_IDS.bookingTestIds.STORE_BOOOKING_ID,
       'responseObject',
       response.data as StorableObject,
     );
 
     const data = TestDataStore.getValue(
       BookingMap.booking,
-      TEST_CONSTANTS.TEST_IDS.bookingTestIds.STORE_BOOOKING_ID,
+      testId.TEST_IDS.bookingTestIds.STORE_BOOOKING_ID,
       'responseObject',
     ) as unknown as BookingResponse;
 
