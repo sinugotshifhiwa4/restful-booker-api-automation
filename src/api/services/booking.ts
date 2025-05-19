@@ -117,6 +117,10 @@ export class Booking {
         this.apiClient.setCookieToken(token),
       );
       ApiResponseValidator.validatePositiveTestResponse(response, 200, 'updateBookingById');
+
+      // Validate response structure and content
+      BookingValidations.validateGetBookingByIdResponse(response);
+      BookingValidations.assertUpdatedBookingDetailsMatchStoredResponse(response);
       return response;
     } catch (error) {
       ApiErrorResponseBuilder.captureApiError(

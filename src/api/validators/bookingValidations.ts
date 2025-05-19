@@ -10,6 +10,8 @@ import {
   Booking,
   BookingDates,
 } from '../../models/api/booking.interface';
+import { BookingDateGenerator } from '../../testData/bookingDateGenerator';
+import * as bd from '../../testData/bookingData.json';
 import ErrorHandler from '../../utils/errors/errorHandler';
 import logger from '../../utils/logging/loggerManager';
 import ApiErrorResponseBuilder from '../../utils/errors/apiErrorResponseBuilder';
@@ -299,5 +301,47 @@ export default class BookingValidations {
       );
       throw error;
     }
+  }
+
+  public static assertUpdatedBookingDetailsMatchStoredResponse(response: AxiosResponse) {
+    try {
+      // update booking payload
+      const updatedBookingPayload = this.updateBookingPayload();
+
+      const responseData = response.data.booking ? response.data.booking : response.data;
+
+      expect(responseData.firstname).toBe(updatedBookingPayload.firstname);
+      expect(responseData.lastname).toBe(updatedBookingPayload.lastname);
+      expect(responseData.totalprice).toBe(updatedBookingPayload.totalprice);
+      expect(responseData.depositpaid).toBe(updatedBookingPayload.depositpaid);
+      expect(responseData.bookingdates.checkin).toBe(updatedBookingPayload.bookingdates.checkin);
+      expect(responseData.bookingdates.checkout).toBe(updatedBookingPayload.bookingdates.checkout);
+      expect(responseData.additionalneeds).toBe(updatedBookingPayload.additionalneeds);
+    } catch (error) {
+      ApiErrorResponseBuilder.captureApiError(
+        error,
+        'assertUpdatedBookingDetailsMatchStoredResponse',
+        'Failed to validate that updated booking details match the stored booking response.',
+      );
+      throw error;
+    }
+  }
+
+  private static updateBookingPayload(): typeof bd.Booking {
+    const payload = { ...bd.Booking };
+
+    payload.firstname = bd.FirstNames[3];
+    payload.lastname = bd.LastNames[7];
+
+    payload.totalprice = 1850;
+    payload.depositpaid = true;
+
+    const getDates = BookingDateGenerator.createBookingDatesfromCurrentDate(10);
+    payload.bookingdates.checkin = getDates.checkin;
+    payload.bookingdates.checkout = getDates.checkout;
+
+    payload.additionalneeds = bd.AdditionalNeeds[2];
+
+    return payload;
   }
 }
