@@ -6,10 +6,8 @@ import RequestContext from '../context/requestContext';
 import ApiResponseValidator from '../validators/apiResponseValidator';
 import * as tokenCredentials from '../../testData/tokenCredentials.json';
 import BookingValidations from '../validators/bookingValidations';
-import { TEST_CONSTANTS } from '../../utils/dataStore/testIds/index';
-import { BookingTokenMap } from '../../utils/dataStore/maps/bookingMaps';
-import TestDataStoreManager from '../../utils/dataStore/utils/testDataStoreManager';
 import ApiErrorResponseBuilder from '../../utils/errors/apiErrorResponseBuilder';
+import ErrorHandler from '../../utils/errors/errorHandler';
 
 export class AuthenticationToken {
   private apiClient: ApiClient;
@@ -27,12 +25,11 @@ export class AuthenticationToken {
   }
   public async requestTokenWithInvalidCredentials(): Promise<void> {
     try {
-      /* 
-  Register negative test expectation.
-  Note: This is a demo website (Restful Booker) that returns HTTP 200 even for failed authentication attempts.
-  Although 200 typically implies success, we must validate the response content to confirm it's an actual failure.
-  This behavior is incorrect by REST standards, but it's outside our control in this demo environment.
-*/
+      // Register negative test expectation.
+      // Note: This is a demo website (Restful Booker) that returns HTTP 200 even for failed authentication attempts.
+      // Although 200 typically implies success, we must validate the response content to confirm it's an actual failure.
+      // This behavior is incorrect by REST standards, but it's outside our control in this demo environment.
+
       RequestContext.registerExpectation('requestTokenWithInvalidCredentials', [200], true);
 
       // Resolve the username from the active environment configuration
@@ -65,7 +62,7 @@ export class AuthenticationToken {
     }
   }
 
-  public async requestTokenWithValidCredentials(): Promise<void> {
+  public async requestTokenWithValidCredentials(): Promise<AxiosResponse> {
     try {
       // Register positive test expectation
       RequestContext.registerExpectation('requestTokenWithValidCredentials', [200], false);
@@ -73,12 +70,7 @@ export class AuthenticationToken {
       // Resolve the username from the active environment configuration
       const { username, password } = await this.environmentResolver.getTokenCredentials();
 
-      // Create a fresh copy of the base credentials template to avoid mutating shared test data.
-      // Override the username and password with valid credentials from the current environment.
-      const userCredentials = { ...tokenCredentials.Credentials };
-
-      userCredentials.username = username;
-      userCredentials.password = password;
+      const userCredentials = await this.createTokenPayload(username, password);
 
       // Send authentication request with valid credentials
       const response = await this.apiClient.sendPostRequest(
@@ -97,16 +89,7 @@ export class AuthenticationToken {
         'requestTokenWithValidCredentials',
       );
 
-      // Extract the token from the response
-      const token = await this.getTokenFromResponse(response);
-
-      // Store the token in the test data store
-      TestDataStoreManager.setValue(
-        BookingTokenMap.token,
-        TEST_CONSTANTS.TEST_IDS.tokenTestIds.REQUEST_TOKEN_WITH_VALID_CREDENTIALS,
-        'token',
-        token,
-      );
+      return response;
     } catch (error) {
       ApiErrorResponseBuilder.captureApiError(
         error,
@@ -117,12 +100,28 @@ export class AuthenticationToken {
     }
   }
 
+  private async createTokenPayload(username: string, password: string) {
+    try {
+      // Create a fresh copy of the base credentials template to avoid mutating shared test data.
+      // Override the username and password with valid credentials from the current environment.
+      const userCredentials = { ...tokenCredentials.Credentials };
+
+      userCredentials.username = username;
+      userCredentials.password = password;
+
+      return userCredentials;
+    } catch (error) {
+      ErrorHandler.captureError(error, 'createTokenPayload', 'Failed to create token payload');
+      throw error;
+    }
+  }
+
   /**
    * Extracts token from response
    * @param response The Axios response object
    * @returns The token string
    */
-  private async getTokenFromResponse(response: AxiosResponse): Promise<string> {
+  public async getTokenFromResponse(response: AxiosResponse): Promise<string> {
     return BookingValidations.extractPropertyFromResponse<string>(
       response,
       'token',

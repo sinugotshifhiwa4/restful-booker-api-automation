@@ -1,5 +1,8 @@
 import { expect } from 'playwright/test';
 import { AxiosResponse } from 'axios';
+import TestDataStore from '../../utils/dataStore/utils/testDataStore';
+import { BookingMap } from '../../utils/dataStore/maps/bookingMaps';
+import { TEST_CONSTANTS } from '../../utils/dataStore/testIds/index';
 import {
   InvalidTokenResponse,
   ValidTokenResponse,
@@ -235,5 +238,66 @@ export default class BookingValidations {
 
   private static validateAdditionalNeeds(additionalneeds: unknown): void {
     expect(typeof additionalneeds, 'additionalneeds should be a string').toBe('string');
+  }
+
+  /**
+   * Validates the response from getting a booking by ID.
+   * Ensures the response contains valid booking details.
+   *
+   * @param response - The Axios response object from the getBookingById request
+   */
+  public static validateGetBookingByIdResponse(response: AxiosResponse): void {
+    try {
+      const methodName = 'validateGetBookingByIdResponse';
+      const data = this.validateResponseData<Booking>(response, methodName);
+
+      this.validateBooking(data);
+      logger.info('Successfully validated getBookingById response');
+    } catch (error) {
+      ErrorHandler.captureError(
+        error,
+        'validateGetBookingByIdResponse',
+        'Failed to validate getBookingById response',
+      );
+      throw error;
+    }
+  }
+  public static async assertBookingDetailsMatchStoredResponse(
+    response: AxiosResponse,
+  ): Promise<void> {
+    try {
+      const storedBookingResponse = TestDataStore.getValue(
+        BookingMap.booking,
+        TEST_CONSTANTS.TEST_IDS.bookingTestIds.STORE_BOOOKING_ID,
+        'responseObject',
+      ) as unknown as BookingResponse;
+
+      if (!storedBookingResponse) {
+        throw new Error('No stored booking response found for comparison.');
+      }
+
+      // Handle both possible response structures - direct booking object or nested in a BookingResponse
+      const actualBooking = response.data.booking ? response.data.booking : response.data;
+
+      // Compare the actual booking with the stored booking
+      expect(actualBooking.firstname).toBe(storedBookingResponse.booking.firstname);
+      expect(actualBooking.lastname).toBe(storedBookingResponse.booking.lastname);
+      expect(actualBooking.totalprice).toBe(storedBookingResponse.booking.totalprice);
+      expect(actualBooking.depositpaid).toBe(storedBookingResponse.booking.depositpaid);
+      expect(actualBooking.bookingdates.checkin).toBe(
+        storedBookingResponse.booking.bookingdates.checkin,
+      );
+      expect(actualBooking.bookingdates.checkout).toBe(
+        storedBookingResponse.booking.bookingdates.checkout,
+      );
+      expect(actualBooking.additionalneeds).toBe(storedBookingResponse.booking.additionalneeds);
+    } catch (error) {
+      ApiErrorResponseBuilder.captureApiError(
+        error,
+        'assertBookingDetailsMatchStoredResponse',
+        'Failed to validate that booking details match the stored booking response.',
+      );
+      throw error;
+    }
   }
 }

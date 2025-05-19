@@ -1,12 +1,10 @@
 import { ValidTokenResponse, BookingResponse } from './../../../models/api/booking.interface';
-
-// Internal type constraint for data that can be stored
-type StorableDataType = Record<string, string | number | null>;
+import { StorableObject } from '../../../models/api/testDataStore.types';
 
 /**
- * Create and export the PreQualification data store
+ * Create and export the Booking related data stores
  */
-export const BookingTokenMap = {
-  token: new Map<string, ValidTokenResponse & StorableDataType>(),
-  booking: new Map<string, BookingResponse & StorableDataType>(),
+export const BookingMap = {
+  token: new Map<string, ValidTokenResponse & StorableObject>(),
+  booking: new Map<string, BookingResponse & StorableObject>(),
 };

@@ -5,11 +5,9 @@ import RequestContext from '../context/requestContext';
 import BookingValidations from '../validators/bookingValidations';
 import * as bd from '../../testData/bookingData.json';
 import { BookingDateGenerator } from '../../testData/bookingDateGenerator';
-import { TEST_CONSTANTS } from '../../utils/dataStore/testIds/index';
-import { BookingTokenMap } from '../../utils/dataStore/maps/bookingMaps';
-import TestDataStoreManager from '../../utils/dataStore/utils/testDataStoreManager';
 import ApiResponseValidator from '../validators/apiResponseValidator';
 import ApiErrorResponseBuilder from '../../utils/errors/apiErrorResponseBuilder';
+import logger from '../../utils/logging/loggerManager';
 
 export class Booking {
   private apiClient: ApiClient;
@@ -43,18 +41,13 @@ export class Booking {
     }
   }
 
-  public async createNewBooking(): Promise<void> {
+  public async createNewBooking(): Promise<AxiosResponse> {
     try {
       RequestContext.registerExpectation('createNewBooking', [200], false);
 
-      const payload = this.createBookingPayload();
-
-      // Log the request payload before sending
-      //logger.info(`Creating new booking with payload: ${JSON.stringify(payload, null, 2)}`);
-
       const response = await this.apiClient.sendPostRequest(
         await this.bookingEndpointBuilder.bookingEndpoint(),
-        payload,
+        this.createBookingPayload(),
         undefined,
       );
 
@@ -63,16 +56,9 @@ export class Booking {
       // Validate response structure and content
       BookingValidations.validateNewlyCreatedBooking(response);
 
-      // Extract the bookingId from the response
-      const bookingId = await this.getBookingIdFromResponse(response);
+      logger.debug(`Response for creating new booking: ${JSON.stringify(response.data, null, 2)}`);
 
-      // Store the bookingId in the TestDataStore
-      TestDataStoreManager.setValue(
-        BookingTokenMap.booking,
-        TEST_CONSTANTS.TEST_IDS.bookingTestIds.CREATE_NEW_BOOKING_AND_STORE_BOOKING_ID,
-        'bookingId',
-        bookingId,
-      );
+      return response;
     } catch (error) {
       ApiErrorResponseBuilder.captureApiError(
         error,
@@ -82,49 +68,6 @@ export class Booking {
       throw error;
     }
   }
-
-  public async createConcurrentNewBooking(testIdSuffix?: string): Promise<string> {
-  try {
-    RequestContext.registerExpectation('createNewBooking', [200], false);
-
-    const payload = this.createBookingPayload();
-
-    const response = await this.apiClient.sendPostRequest(
-      await this.bookingEndpointBuilder.bookingEndpoint(),
-      payload,
-      undefined,
-    );
-
-    ApiResponseValidator.validatePositiveTestResponse(response, 200, 'createNewBooking');
-
-    // Validate response structure and content
-    BookingValidations.validateNewlyCreatedBooking(response);
-
-    // Extract the bookingId from the response
-    const bookingId = await this.getBookingIdFromResponse(response);
-
-    // Store the bookingId in the TestDataStore with a custom test ID if provided
-    const testId = testIdSuffix 
-      ? `${TEST_CONSTANTS.TEST_IDS.bookingTestIds.CREATE_NEW_BOOKING_AND_STORE_BOOKING_ID}_${testIdSuffix}`
-      : TEST_CONSTANTS.TEST_IDS.bookingTestIds.CREATE_NEW_BOOKING_AND_STORE_BOOKING_ID;
-    
-    TestDataStoreManager.setValue(
-      BookingTokenMap.booking,
-      testId,
-      'bookingId',
-      bookingId,
-    );
-    
-    return bookingId;
-  } catch (error) {
-    ApiErrorResponseBuilder.captureApiError(
-      error,
-      'createConcurrentNewBooking',
-      'Failed to create concurrent new booking',
-    );
-    throw error;
-  }
-}
 
   private createBookingPayload(): typeof bd.Booking {
     const payload = { ...bd.Booking };
@@ -146,19 +89,6 @@ export class Booking {
     return payload;
   }
 
-  /**
-   * Extracts booking ID from response
-   * @param response The Axios response object
-   * @returns The booking ID string
-   */
-  private async getBookingIdFromResponse(response: AxiosResponse): Promise<string> {
-    return BookingValidations.extractPropertyFromResponse<string>(
-      response,
-      'bookingid',
-      'getBookingIdFromResponse',
-    );
-  }
-
   public async getBookingById(bookingId: number): Promise<void> {
     try {
       RequestContext.registerExpectation('getBookingById', [200], false);
@@ -168,7 +98,8 @@ export class Booking {
       );
 
       ApiResponseValidator.validatePositiveTestResponse(response, 200, 'getBookingById');
-
+      BookingValidations.validateGetBookingByIdResponse(response);
+      BookingValidations.assertBookingDetailsMatchStoredResponse(response);
     } catch (error) {
       ApiErrorResponseBuilder.captureApiError(
         error,
