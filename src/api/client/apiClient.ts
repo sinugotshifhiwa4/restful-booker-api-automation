@@ -13,22 +13,32 @@ export class ApiClient {
   constructor() {
     this.defaultHeaders = {
       'Content-Type': 'application/json',
-       'Accept': 'application/json',
+      Accept: 'application/json',
     };
   }
 
-  /**
-   * Creates headers for the HTTP request.
-   * @param authorizationHeader Authorization header value if provided
-   * @returns Headers object
-   */
-  private createHeaders(authorizationHeader?: string): {
+  public setCookieToken(token: string): string {
+    return `token=${token}`;
+  }
+
+  private createHeaders(authHeaders?: string | { [key: string]: string }): {
     [key: string]: string;
   } {
     const headers = { ...this.defaultHeaders };
-    if (authorizationHeader) {
-      headers['Authorization'] = authorizationHeader;
+
+    if (authHeaders) {
+      if (typeof authHeaders === 'string') {
+        if (authHeaders.startsWith('Bearer ')) {
+          headers['Authorization'] = authHeaders;
+        } else {
+          headers['Cookie'] = authHeaders;
+        }
+      } else {
+        // Merge the provided headers object into the default headers
+        Object.assign(headers, authHeaders);
+      }
     }
+
     return headers;
   }
 
@@ -51,7 +61,7 @@ export class ApiClient {
     headers?: { [key: string]: string },
   ): Promise<AxiosResponse<T>> {
     try {
-      const config = { headers: { ...this.defaultHeaders, ...headers } };
+      const config = { headers };
 
       // Handle different parameter orders for different HTTP methods
       if (method === 'get' || method === 'delete') {
@@ -102,7 +112,7 @@ export class ApiClient {
   async sendPutRequest<T>(
     endpoint: string,
     payload?: object,
-    authorizationHeader?: string,
+    authorizationHeader?: string | { [key: string]: string },
   ): Promise<AxiosResponse<T>> {
     const headers = this.createHeaders(authorizationHeader);
     return this.sendRequest<T>('put', endpoint, payload, headers);
@@ -111,7 +121,7 @@ export class ApiClient {
   async sendPatchRequest<T>(
     endpoint: string,
     payload?: object,
-    authorizationHeader?: string,
+    authorizationHeader?: string | { [key: string]: string },
   ): Promise<AxiosResponse<T>> {
     const headers = this.createHeaders(authorizationHeader);
     return this.sendRequest<T>('patch', endpoint, payload, headers);
@@ -127,7 +137,7 @@ export class ApiClient {
 
   async sendDeleteRequest<T>(
     endpoint: string,
-    authorizationHeader?: string,
+    authorizationHeader?: string | { [key: string]: string },
   ): Promise<AxiosResponse<T>> {
     const headers = this.createHeaders(authorizationHeader);
     return this.sendRequest<T>('delete', endpoint, undefined, headers);

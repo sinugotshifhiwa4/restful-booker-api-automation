@@ -4,6 +4,7 @@ export enum TokenTestIds {
 
 export enum BookingTestIds {
   STORE_BOOOKING_ID = 'store_booking_id',
+  UPDATED_BOOKING_DATA = 'updated_booking_data',
 }
 
 export enum BookingFlowTestIds {

@@ -3,7 +3,6 @@ import { test } from '../../fixtures/restfulBooker.fixture';
 import { BookingMap } from '../../src/utils/dataStore/maps/bookingMaps';
 import TestDataStore from '../../src/utils/dataStore/utils/testDataStore';
 import { StorableObject } from '../../src/models/api/testDataStore.types';
-import { BookingResponse } from '../../src/models/api/booking.interface';
 import ErrorHandler from '../../src/utils/errors/errorHandler';
 import logger from '../../src/utils/logging/loggerManager';
 
@@ -23,7 +22,7 @@ test.describe('All Booking Test Suite @regression', () => {
 
 test.describe('Get Booking Test Suite @regression', () => {
   test('should get booking by id @sanity', async ({ booking, testId }) => {
-    // Create a new booking
+    // === BOOKING CREATION: Create and store new booking ===
     const response = await booking.createNewBooking();
 
     TestDataStore.setValue(
@@ -33,20 +32,45 @@ test.describe('Get Booking Test Suite @regression', () => {
       response.data as StorableObject,
     );
 
-    const data = TestDataStore.getValue(
-      BookingMap.booking,
-      testId.TEST_IDS.bookingTestIds.STORE_BOOOKING_ID,
-      'responseObject',
-    ) as unknown as BookingResponse;
-
-    // Get the booking
-    const bookingId = data.bookingid;
+    // === GET BOOKING: Get booking using stored bookingId ===
+    const bookingId = response.data.bookingid;
 
     if (typeof bookingId === 'number') {
       await booking.getBookingById(bookingId);
       logger.info('Get booking by id completed successfully.');
     } else {
       ErrorHandler.logAndThrow('Invalid booking ID: must be a number', 'getBookingById');
+    }
+  });
+
+  test('should update booking by id @sanity', async ({
+    authenticationToken,
+    booking,
+    testId,
+  }) => {
+    // === AUTHENTICATION: Request and store token ===
+    const tokenResponse = await authenticationToken.requestTokenWithValidCredentials();
+    const token = await authenticationToken.getTokenFromResponse(tokenResponse);
+
+    // === BOOKING CREATION: Create and store new booking ===
+    const newBookingResponse = await booking.createNewBooking();
+
+    TestDataStore.setValue(
+      BookingMap.booking,
+      testId.TEST_IDS.bookingTestIds.STORE_BOOOKING_ID,
+      'responseObject',
+      newBookingResponse.data as StorableObject,
+    );
+
+    const bookingId = newBookingResponse.data.bookingid;
+
+    // === BOOKING UPDATE: Update booking using stored token and bookingId ===
+    if (typeof bookingId === 'number') {
+      await booking.updateBookingById(bookingId, token);
+
+      logger.info('Update booking by id completed successfully.');
+    } else {
+      ErrorHandler.logAndThrow('Invalid booking ID: must be a number', 'updateBookingById');
     }
   });
 });

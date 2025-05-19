@@ -7,7 +7,6 @@ import * as bd from '../../testData/bookingData.json';
 import { BookingDateGenerator } from '../../testData/bookingDateGenerator';
 import ApiResponseValidator from '../validators/apiResponseValidator';
 import ApiErrorResponseBuilder from '../../utils/errors/apiErrorResponseBuilder';
-import logger from '../../utils/logging/loggerManager';
 
 export class Booking {
   private apiClient: ApiClient;
@@ -55,8 +54,6 @@ export class Booking {
 
       // Validate response structure and content
       BookingValidations.validateNewlyCreatedBooking(response);
-
-      logger.debug(`Response for creating new booking: ${JSON.stringify(response.data, null, 2)}`);
 
       return response;
     } catch (error) {
@@ -108,5 +105,44 @@ export class Booking {
       );
       throw error;
     }
+  }
+
+  public async updateBookingById(bookingId: number, token: string): Promise<AxiosResponse> {
+    try {
+      RequestContext.registerExpectation('updateBookingById', [200], false);
+
+      const response = await this.apiClient.sendPutRequest(
+        await this.bookingEndpointBuilder.getBookingByIdEndpoint(bookingId),
+        this.updateBookingPayload(),
+        this.apiClient.setCookieToken(token),
+      );
+      ApiResponseValidator.validatePositiveTestResponse(response, 200, 'updateBookingById');
+      return response;
+    } catch (error) {
+      ApiErrorResponseBuilder.captureApiError(
+        error,
+        'updateBookingById',
+        'Failed to update booking by ID',
+      );
+      throw error;
+    }
+  }
+
+  private updateBookingPayload(): typeof bd.Booking {
+    const payload = { ...bd.Booking };
+
+    payload.firstname = bd.FirstNames[3];
+    payload.lastname = bd.LastNames[7];
+
+    payload.totalprice = 1850;
+    payload.depositpaid = true;
+
+    const getDates = BookingDateGenerator.createBookingDatesfromCurrentDate(10);
+    payload.bookingdates.checkin = getDates.checkin;
+    payload.bookingdates.checkout = getDates.checkout;
+
+    payload.additionalneeds = bd.AdditionalNeeds[2];
+
+    return payload;
   }
 }
